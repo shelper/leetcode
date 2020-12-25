@@ -12,7 +12,7 @@ class Solution(object):
             return ""
 
         t_char_count = [0] * 256
-        s_char_count = [0] * 256
+        substring_char_count = [0] * 256
 
         for c in t:
             t_char_count[char2_idx(c)] += 1
@@ -27,20 +27,28 @@ class Solution(object):
                     break
                 else:
                     left += 1
-                    left_char_idx = char2_idx(s[left - 1])
-                    if t_char_count[left_char_idx] > 0:
-                        s_char_count[left_char_idx] -= 1
-                        len_t_in_s -= 1
+                    removed_char_idx = char2_idx(s[left - 1])
+                    if t_char_count[removed_char_idx] > 0:
+                        substring_char_count[removed_char_idx] -= 1
+                        if (
+                            substring_char_count[removed_char_idx]
+                            < t_char_count[removed_char_idx]
+                        ):
+                            len_t_in_s -= 1
 
             if len_t_in_s < len(t):
                 if right == len(s) - 1:
                     break
                 else:
                     right += 1
-                    right_char_idx = char2_idx(s[right])
-                    if s_char_count[right_char_idx] < t_char_count[right_char_idx]:
-                        s_char_count[right_char_idx] += 1
-                        len_t_in_s += 1
+                    added_char_idx = char2_idx(s[right])
+                    if t_char_count[added_char_idx] > 0:
+                        substring_char_count[added_char_idx] += 1
+                        if (
+                            substring_char_count[added_char_idx]
+                            <= t_char_count[added_char_idx]
+                        ):
+                            len_t_in_s += 1
 
             if len_t_in_s == len(t) and (end - begin > right - left or begin < 0):
                 begin, end = left, right
