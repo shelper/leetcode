@@ -10,10 +10,12 @@ class Solution(object):
         if n == 1:
             return [0, 1]
 
-        return [2 ** (n - 1) + v for v in self.gray_code(n - 1)] + list(
-            reversed(self.gray_code(n - 1))
-        )
-        # list.reverse() only change local list but return only None
+        result = [0, 1]
+        for i in range(1, n):
+            result.extend([2 ** i + v for v in reversed(result)])
+
+        return result
 
 
 print([bin(v) for v in Solution().gray_code(10)])
+print(Solution().gray_code(10))
