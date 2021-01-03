@@ -5,6 +5,9 @@ class Solution(object):
         ips = []
         len_s = len(s)
 
+        if len_s < 4:
+            return
+
         def dfs(seg_start, seg_idx):
             # not enough string for segmentation
             if len_s - seg_start < total_seg_num - seg_idx:
@@ -42,23 +45,48 @@ class Solution(object):
         dfs(0, 0)
         return ips
 
-    def ip_restore_deque(self, s: str):
+    def ip_restore_queue(self, s: str):
         total_seg_num = 4
-        if s[0] =='0':
-            seg_steps = [(0, 1)]
-        else:
-            seg_steps =  [(0, 1), (0, 2), (0, 3)]
-        
-        for step in seg_steps:
-            
-            
-
-        q = [1, 2, 3]
-        seg_ends = [0] * total_seg_num
         ips = []
         len_s = len(s)
+        seg_ends = [0] * (total_seg_num + 1)
+
+        if len_s < 4:
+            return
+
+        segs = [(-1, 0)]  # list of segs as (seg_id, seg_end_idx)
+
+        while len(segs) > 0:
+            seg = segs.pop()
+            seg_ends[seg[0] + 1] = seg[1]
+            if seg[0] == 3:
+                if seg[1] == len_s:
+                    ips.append(
+                        ".".join(
+                            s[start:end]
+                            for start, end in zip(seg_ends[:-1], seg_ends[1:])
+                        )
+                    )
+            else:
+                next_seg_idx = seg[0] + 1
+                next_seg_start = seg[1]  # new seg starts at the end of previous seg
+                if next_seg_start >= len_s:
+                    continue
+                if s[next_seg_start] == "0":
+                    next_seg = (next_seg_idx, next_seg_start + 1)
+                    if next_seg[0] == 3 and next_seg[1] == len_s:
+                        continue
+                    segs.append(next_seg)
+                else:
+                    for i in range(1, min(len_s - next_seg_start + 1, 4)):
+                        next_seg = (next_seg_idx, next_seg_start + i)
+                        if int(s[seg[1] : next_seg[1]]) > 255:
+                            break
+                        segs.append(next_seg)
+
+        return ips
 
 
-s = "0255200252"
+s = "025520252"
 print(Solution().ip_restore_recursive(s))
-print(Solution().ip_restore_deque(s))
+print(Solution().ip_restore_queue(s))
